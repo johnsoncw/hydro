@@ -1,0 +1,46 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}This is a hydroponics project{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+    <!-- ... -->
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>Hydroponics Dashboard</h1>
+    <div id="container" class="chart" style="height: 300px; width: 500px"></div>
+{% endblock %}
+
+{% block scripts %}
+    {{  super() }}
+    <script src="static/highcharts/js/highcharts.js"></script>
+    <script src="static/highcharts/js/modules/exporting.js"></script>
+    <script>
+        $(function () {
+            $('#container').highcharts({
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Unit status'
+                },
+                xAxis: {
+                    categories: ['Temperature']
+                },
+                yAxis: {
+                    title: {
+                        text: 'Degrees F'
+                    }
+                },
+                series: [{
+                    name: 'Water',
+                    data: [ {{  water_temp }} ]
+                }, {
+                    name: 'Air',
+                    data: [ {{  air_temp }} ]
+                }]
+            });
+        });
+    </script>
+{% endblock %}

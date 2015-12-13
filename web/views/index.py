@@ -1,7 +1,7 @@
-from web import web_server
+from flask import render_template
 
 
-@web_server.route('/')
 def index():
-    return 'Hello World!'
-
+    water_t=45
+    air_t=75
+    return render_template('home.html', water_temp=water_t, air_temp=air_t)

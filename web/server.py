@@ -1,11 +1,31 @@
-from web import web_server
+from flask import Flask
+from flask_bootstrap import Bootstrap
 import web.views.index
 
-# If HYDRO_SETTINGS environment value points to a config file
-# override the default configuration
-web_server.config.from_envvar('HYDRO_SETTINGS', silent=True)
+# default configuration
+DATABASE = '/tmp/database/hydro.db'
+SECRET_KEY = 'development key'
+USERNAME = 'admin'
+PASSWORD = 'nimda'
+PORT = 5060
+HOST = "0.0.0.0"
 
 
-def start():
-    print("Starting web server")
-    web_server.run(host="0.0.0.0", port=5090, debug=True)
+class HydroWebServer():
+    def __init__(self):
+        print("Initializing web server")
+        self.svr = Flask(__name__)
+        # If HYDRO_SETTINGS environment value points to a config file
+        # override the default configuration
+        self.svr.config.from_envvar('HYDRO_SETTINGS', silent=True)
+        Bootstrap(self.svr)
+        self.svr.route('/', methods=['GET'])(web.views.index.index)
+
+    def start(self, debug=False):
+        print("Starting web server")
+        self.svr.run(host=HOST, port=PORT, debug=debug)
+
+
+def run_webserver():
+    server = HydroWebServer()
+    server.start()
