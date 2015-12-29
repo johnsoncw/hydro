@@ -3,6 +3,7 @@ import time
 # from web.server import HydroWebServer
 from web.server import run_webserver
 from monitor.service import run_monitor
+from control.service import run_control
 import multiprocessing as mp
 
 if __name__ == "__main__":
@@ -10,8 +11,9 @@ if __name__ == "__main__":
     pw.start()
     pm = mp.Process(target=run_monitor)
     pm.start()
+    pc = mp.Process(target=run_control)
+    pc.start()
     # web_server = HydroWebServer()
     # web_server.start(debug=True)
     while True:
         time.sleep(5)
-        print(".")

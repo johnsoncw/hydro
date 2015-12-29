@@ -1,4 +1,6 @@
 import time
+import sys
+import monitor.hydro
 
 
 class Service():
@@ -9,7 +11,9 @@ class Service():
         print("Starting monitor service")
         while True:
             time.sleep(5)
-            print("m")
+            monitor.hydro.take_measurements()
+            sys.stdout.write("m")
+            sys.stdout.flush()
 
 
 def run_monitor():
