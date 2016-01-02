@@ -1,5 +1,5 @@
-from input_output import external
 from datetime import datetime
+from input_output import interfaces
 
 
 class _Sim():
@@ -44,7 +44,7 @@ class _Sim():
         return cls._air_temp
 
 
-class SimulatedOutput(external.Output):
+class SimulatedOutput(interfaces.Output):
 
     def set_water_heater_on(self, state=True):
         _Sim.water_heater_is_on = state
@@ -56,7 +56,7 @@ class SimulatedOutput(external.Output):
         _Sim.light_is_on = state
 
 
-class SimulatedInput(external.Input):
+class SimulatedInput(interfaces.Input):
 
     def get_water_temp_c(self):
         return _Sim.get_water_temp()
