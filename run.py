@@ -1,26 +1,19 @@
-#!flask/bin/python
 import time
-# from web.server import HydroWebServer
-from web.server import run_webserver
-from monitor.service import run_monitor
-from control.service import run_control
 import multiprocessing as mp
-from control.hydro import start_lettuce_crop
-from database.hydro import get_db_session, get_current_crop
+
+import database.crops
+import monitor.service
+import web.server
+import control.service
 
 if __name__ == "__main__":
-    pw = mp.Process(target=run_webserver)
-    pw.start()
-    pm = mp.Process(target=run_monitor)
-    pm.start()
-    pc = mp.Process(target=run_control)
-    pc.start()
-    time.sleep(5)
-    session = get_db_session()
-    crop = get_current_crop(session)
-    if crop is None:
-        start_lettuce_crop()
-    # web_server = HydroWebServer()
-    # web_server.start(debug=True)
-    while True:
-        time.sleep(5)
+    crop_id = database.crops.get_crop_id("emma_lettuce_1", simulated=True, create=True)
+    if crop_id:
+        pw = mp.Process(target=web.server.run_webserver, args=(crop_id,))
+        pw.start()
+        pm = mp.Process(target=monitor.service.run_monitor, args=(crop_id,))
+        pm.start()
+        pc = mp.Process(target=control.service.run_control, args=(crop_id,))
+        pc.start()
+        while True:
+            time.sleep(5)

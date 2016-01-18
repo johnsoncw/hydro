@@ -1,11 +1,8 @@
-from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base()
-db_filename = 'hydro.db'
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
 
+from database import Base, db_filename
 import database.controls
 import database.crops
 

@@ -1,11 +1,14 @@
-from input_output import get_input_interface
-from database.hydro import store_measurement
+import input_output
+import database.core
+import database.crops
+import database.measurements
 
 
-def take_measurements():
-    ext_ip = get_input_interface()
-    store_measurement(
-        ext_ip.get_air_c(),
-        ext_ip.get_water_c(),
-        ext_ip.get_grow_media_c(),
-        ext_ip.light_is_on())
+def take_measurements(crop_id):
+    session = database.core.get_db_session()
+    crop = database.crops.get_crop_by_id(session, crop_id)
+    ext_ip = input_output.get_input_interface(crop.simulated)
+    database.measurements.store_measurement(
+        session,
+        crop,
+        ext_ip)

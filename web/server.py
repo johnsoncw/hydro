@@ -12,9 +12,10 @@ HOST = "0.0.0.0"
 
 
 class HydroWebServer():
-    def __init__(self):
+    def __init__(self, crop_id):
         print("Initializing web server")
         self.svr = Flask(__name__)
+        self.crop_id = crop_id
         # If HYDRO_SETTINGS environment value points to a config file
         # override the default configuration
         self.svr.config.from_envvar('HYDRO_SETTINGS', silent=True)
@@ -26,6 +27,6 @@ class HydroWebServer():
         self.svr.run(host=HOST, port=PORT, debug=debug)
 
 
-def run_webserver():
-    server = HydroWebServer()
+def run_webserver(crop_id):
+    server = HydroWebServer(crop_id)
     server.start()

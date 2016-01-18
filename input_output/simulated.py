@@ -14,58 +14,46 @@ class _Sim():
     _air_temp = 18.0
     _grow_media_temp = 16.0
 
-    _water_delta_on = 0.01
-    _water_delta_off = -0.01
-    _air_delta_on = 0.2
-    _air_delta_off = -0.4
-    _grow_media_delta_on = 0.05
-    _grow_media_delta_off = -0.1
-
-    @classmethod
-    def _calc_delta_changes(cls):
-        dt_now = datetime.now()
-        if cls._last_dt is None:
-            cls._last_dt = dt_now
+    @staticmethod
+    def _iterate(val, heater_on, elapsed_s, delta_on, delta_off):
+        ambient_pull = elapsed_s * delta_off
+        if val > _Sim._ambient_temp:
+            ambient_pull *= -1
+        if heater_on:
+            return val + ambient_pull + elapsed_s * delta_on
         else:
-            elapsed_s = (dt_now - cls._last_dt).total_seconds()
+            return val + ambient_pull
+
+    @staticmethod
+    def _calc_delta_changes():
+        now = datetime.now()
+        if _Sim._last_dt is None:
+            _Sim._last_dt = now
+        else:
+            elapsed_s = (now - _Sim._last_dt).total_seconds()
             if elapsed_s > 1.0:
-                if cls.water_heater_is_on:
-                    cls._water_temp += elapsed_s * cls._water_delta_on
-                else:
-                    if cls._water_temp > cls._ambient_temp:
-                        cls._water_temp += elapsed_s * cls._water_delta_off
-                    if cls._water_temp < cls._ambient_temp:
-                        cls._water_temp -= elapsed_s * cls._water_delta_off
-                if cls.air_heater_is_on:
-                    cls._air_temp += elapsed_s * cls._air_delta_on
-                else:
-                    if cls._air_temp > cls._ambient_temp:
-                        cls._air_temp += elapsed_s * cls._air_delta_off
-                    if cls._air_temp < cls._ambient_temp:
-                        cls._air_temp -= elapsed_s * cls._air_delta_off
-                if cls.grow_media_heater_is_on:
-                    cls._grow_media_temp += elapsed_s * cls._grow_media_delta_on
-                else:
-                    if cls._grow_media_temp > cls._ambient_temp:
-                        cls._grow_media_temp += elapsed_s * cls._grow_media_delta_off
-                    if cls._grow_media_temp < cls._ambient_temp:
-                        cls._grow_media_temp -= elapsed_s * cls._grow_media_delta_off
-                cls._last_dt = dt_now
+                _Sim._last_dt = now
+                _Sim._water_temp = _Sim._iterate(
+                        _Sim._water_temp, _Sim.water_heater_is_on, elapsed_s, 0.02, 0.01)
+                _Sim._air_temp = _Sim._iterate(
+                        _Sim._air_temp, _Sim.air_heater_is_on, elapsed_s, 0.4, 0.2)
+                _Sim._grow_media_temp = _Sim._iterate(
+                        _Sim._grow_media_temp, _Sim.grow_media_heater_is_on, elapsed_s, 0.02, 0.01)
 
-    @classmethod
-    def get_water_c(cls):
-        cls._calc_delta_changes()
-        return cls._water_temp
+    @staticmethod
+    def get_water_c():
+        _Sim._calc_delta_changes()
+        return _Sim._water_temp
 
-    @classmethod
-    def get_air_c(cls):
-        cls._calc_delta_changes()
-        return cls._air_temp
+    @staticmethod
+    def get_air_c():
+        _Sim._calc_delta_changes()
+        return _Sim._air_temp
 
-    @classmethod
-    def get_grow_media_c(cls):
-        cls._calc_delta_changes()
-        return cls._grow_media_temp
+    @staticmethod
+    def get_grow_media_c():
+        _Sim._calc_delta_changes()
+        return _Sim._grow_media_temp
 
 
 class SimulatedOutput(interfaces.Output):
